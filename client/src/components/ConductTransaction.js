@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { FormGroup, FormControl, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import history from '../history';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 class ConductTransaction extends Component {
-  state = { recipient: '', amount: 0, knownAddresses: [] };
+  state = { value: '', copied: false, recipient: '', amount: 0, knownAddresses: [] };
 
   componentDidMount() {
     fetch(`${document.location.origin}/api/known-addresses`)
@@ -36,16 +37,26 @@ class ConductTransaction extends Component {
 
   render() {
     return (
-      <div className='ConductTransaction'>
-        <Link to='/'>Home</Link>
-        <h3>Conduct a Transaction</h3>
+      <div className='Trading'>
+        <Link to='/' class="btn btn-primary" role="button">Home</Link>
+        <h3>Trade With</h3>
         <br />
-        <h4>Known Addresses</h4>
+        <h3>Known Addresses:</h3>
         {
           this.state.knownAddresses.map(knownAddress => {
             return (
               <div key={knownAddress}>
-                <div>{knownAddress}</div>
+                {/* <div className='font'>{knownAddress}</div> */}
+
+                Other Addresses: <input value={knownAddress} className='font'
+                  onChange={({ target: { address } }) => this.setState({ address, copied: false })} />
+
+                <CopyToClipboard text={knownAddress}
+                  onCopy={() => this.setState({ copied: true })}>
+                  <button className='Button' class="btn btn-info">Copy</button>
+                </CopyToClipboard>
+
+
                 <br />
               </div>
             );
@@ -55,7 +66,7 @@ class ConductTransaction extends Component {
         <FormGroup>
           <FormControl
             input='text'
-            placeholder='recipient'
+            placeholder='Add Recipient'
             value={this.state.recipient}
             onChange={this.updateRecipient}
           />
@@ -63,7 +74,7 @@ class ConductTransaction extends Component {
         <FormGroup>
           <FormControl
             input='number'
-            placeholder='amount'
+            placeholder='Amount'
             value={this.state.amount}
             onChange={this.updateAmount}
           />
